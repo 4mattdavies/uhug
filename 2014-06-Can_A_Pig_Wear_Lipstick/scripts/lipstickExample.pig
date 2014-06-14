@@ -1,6 +1,6 @@
 ----------------------------
 ----------------------------
--- AQ Particulate Example
+-- Lipstick Example
 -- Matt Davies
 --
 -- Data downloaded from http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/download_files.html 6/17/2014 @ 9:00 Mountain
@@ -11,12 +11,15 @@
 %DEFAULT delimiter ','
 %DEFAULT input 'aqdata/utah_daily_pm_2_5_2013.csv'
 %DEFAULT date_format 'yyyy-MM-dd'
+%DEFAULT output /tmp/outfile
 
 REGISTER /opt/cloudera/parcels/CDH/lib/pig/piggybank.jar
-REGISTER /tmp/uhug.jar
 
-DEFINE PRETTY_TIME  org.uhug.code.sample.pig.udf.matt.PrettyTime('$date_format');
-DEFINE CHART_VISUALIZER  org.uhug.code.sample.pig.udf.matt.ChartVisualizer();
+
+---------------------------
+-- Cleanup
+---------------------------
+rmf $output
 
 ----------------------------
 -- Load the data 
@@ -28,31 +31,48 @@ DEFINE CHART_VISUALIZER  org.uhug.code.sample.pig.udf.matt.ChartVisualizer();
 data = LOAD '$input' using org.apache.pig.piggybank.storage.CSVExcelStorage( '$delimiter', 'YES_MULTILINE', 'NOCHANGE', 'SKIP_INPUT_HEADER') as (state_code:int, county_code:int, site_num:int, parameter_code:int, poc:int, latitude:double, longitude:double, datum:chararray, param_name:chararray, sample_duration:chararray, pollutant_standard:chararray, date_local:datetime, units_of_measure:chararray, event_type:chararray, observation_count:int, observation_percent:double, arithmetic_mean:double, first_max_value:double, fist_max_hour:int, aqi:int, method_name:chararray, local_site_name:chararray, address:chararray, state_name:chararray, county_namer:chararray, city_name:chararray, cbsa_name:chararray, date_last_change:datetime);
 
 ----------------------------
--- Print the date 
+-- Generate list of cities
 ----------------------------
-small_data = LIMIT data 10;
-dates = FOREACH small_data GENERATE PRETTY_TIME(date_local);
---dump dates;
+projected_cities = FOREACH data generate city_name;
+cities = DISTINCT projected_cities;
+--dump cities;
 
 ----------------------------
--- Find the arithmetic means for the cities
+--slim the data
 ----------------------------
-city_means = FOREACH data GENERATE city_name, arithmetic_mean;
-grouped_city_means = GROUP city_means BY city_name;
-slimmed_city_means = FOREACH grouped_city_means GENERATE group as city_name, $1.arithmetic_mean as means;
---dump slimmed_city_means;
+slimmed_data = FOREACH data generate site_num, date_local, arithmetic_mean, observation_count, pollutant_standard, city_name;
 
 ----------------------------
--- Find min, max, avg, means for the cities
+-- Split the data
+-- notice lazy evaluation
 ----------------------------
-summary_for_cities = FOREACH slimmed_city_means GENERATE city_name, MIN(means.arithmetic_mean) as min, MAX(means.arithmetic_mean) as max, AVG(means.arithmetic_mean) as avg, SUM(means.arithmetic_mean) as sum, COUNT(means.arithmetic_mean) as cnt;
---dump summary_for_cities; 
+SPLIT slimmed_data INTO logan_data if (city_name=='Logan'), magna_data if (city_name=='Magna'), ogden_data if (city_name=='Ogden'), provo_data if (city_name=='Provo'), slc_data if (city_name=='Salt Lake City');
 
 ----------------------------
--- Find the values for just SLC and order by date
+--Perform some logic to spice things up
 ----------------------------
-slc_summary_data = FILTER summary_for_cities BY city_name=='Salt Lake City';
-salt_lake_data = FILTER data BY city_name=='Salt Lake City';
-projected_slc_data = FOREACH salt_lake_data GENERATE CHART_VISUALIZER(arithmetic_mean, slc_summary_data.max),ToMilliSeconds(date_local) as millis, FLATTEN(PRETTY_TIME(date_local)) as dt,local_site_name,  arithmetic_mean as mean;
-ordered_slc_data = ORDER projected_slc_data BY millis ASC, local_site_name;
-dump ordered_slc_data;
+o_logan_data = ORDER logan_data by arithmetic_mean;
+o_magna_data = ORDER magna_data by arithmetic_mean;
+
+----------------------------
+--Monkey with the magna data to make the graph look cool
+----------------------------
+magna_data = FOREACH o_magna_data generate site_num, date_local, arithmetic_mean;
+magna_data2 = FOREACH o_magna_data generate site_num, date_local, observation_count, pollutant_standard, city_name;
+
+----------------------------
+-- Join the 2 magna datasets together
+-- project the relvant fields
+----------------------------
+joined_magna = JOIN magna_data BY date_local, magna_data2 BY date_local;
+p_magna = FOREACH joined_magna GENERATE magna_data::site_num as site_num, magna_data::date_local as date_local, magna_data::arithmetic_mean as mean, magna_data2::observation_count as observation_count, magna_data2::pollutant_standard as pollutant_standard, magna_data2::city_name;
+
+----------------------------
+-- Union the datasets
+----------------------------
+all_data = UNION o_logan_data, o_magna_data, p_magna;
+
+----------------------------
+-- store the data
+----------------------------
+STORE all_data INTO '$output' using PigStorage();
