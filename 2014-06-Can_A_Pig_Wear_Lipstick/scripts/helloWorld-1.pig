@@ -14,5 +14,4 @@
 ----------------------------
 data = LOAD '$input' using PigStorage() as (txt:chararray);
 tokens = foreach data GENERATE FLATTEN(STRSPLIT(txt, ' ', 0));
---tokens = foreach data GENERATE FLATTEN(STRSPLIT(txt, ' ', 0));
 dump tokens;
