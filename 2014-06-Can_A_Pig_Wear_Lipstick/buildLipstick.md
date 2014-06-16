@@ -37,6 +37,8 @@ see build.gradle file
 <h4>Update BuildConfig.groovy to search additional repositories</h4>
 see BuildConfig.groovy
 
+file is located at lipstick-server/grails-app/conf/BuildConfig.groovy
+
 <h4>Build Lipstick</h4>
 <pre>./gradlew --stacktrace --debug --info</pre>
 
