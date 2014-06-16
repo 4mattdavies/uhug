@@ -32,10 +32,10 @@ flush privileges;</pre>
 <pre>git clone https://github.com/Netflix/Lipstick.git</pre>
 
 <h4>Modify build.gradle to use CDH</h4>
-see build.gradle file
+see [build.gradle](https://github.com/matt-davies/uhug/blob/master/2014-06-Can_A_Pig_Wear_Lipstick/build.gradle)
 
 <h4>Update BuildConfig.groovy to search additional repositories</h4>
-see BuildConfig.groovy
+see [BuildConfig.groovy](https://github.com/matt-davies/uhug/blob/master/2014-06-Can_A_Pig_Wear_Lipstick/BuildConfig.groovy)
 
 file is located at lipstick-server/grails-app/conf/BuildConfig.groovy
 
