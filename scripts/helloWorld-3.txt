@@ -1,0 +1,22 @@
+WELCOME
+You’ve landed in the elephant’s den. Mind the droppings.
+
+Remember, Hadoop is meant to handle *Big Data*.
+
+Welcome to UHUG.org: Utah Hadoop Users Group.
+
+What is Hadoop? Many of you may have already heard of it; many of you may want to learn more. That’s what this website and our local users groups hopes to achieve for all. We are a group of professionals who gather monthly to discuss: the basics of Hadoop; real world solutions Hadoop provides, and simply: “How the heck do you use this damn thing?”
+
+Hadoop is many things to many people. Foremost, it is the quintessential solution for big data needs.
+
+We invite both the veteran-ed Hadoop user and the noob.
+
+Check out our calendar of events; our proposed topics. Be sure to RSVP for the upcoming meeting (otherwise you won’t get any food or beverage and may dehydrate consuming all the knowledge at hand).
+
+Seriously though… We are a group of professionals whom are excited to spread our knowledge of the wonderful technology known as Hadoop. We don’t bite. We like stupid questions; they help us dispel myths and teach us something as well. We want to foster a community that adheres to the Open Source Software standard of everyone helping everyone to succeed.
+
+We hope you will join us.
+
+Until then, cheers.
+
+-uhug

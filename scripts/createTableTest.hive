@@ -1,0 +1,8 @@
+use matt;
+drop table if exists test;
+create table test (
+  a STRING,
+  b STRING
+) PARTITIONED BY (part STRING)
+STORED AS ORC;
+quit;
