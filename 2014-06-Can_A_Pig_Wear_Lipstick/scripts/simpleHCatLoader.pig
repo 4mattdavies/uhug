@@ -1,3 +1,9 @@
+-----------------------------
+--
+-- Simple HCat storing tool
+-- Matt Davies
+--
+-----------------------------
 
 %DEFAULT db 'matt'
 %DEFAULT table 'test'
