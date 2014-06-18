@@ -1,8 +1,6 @@
 package org.uhug.code.sample.pig.udf.matt;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
