@@ -39,8 +39,8 @@ see [BuildConfig.groovy](https://github.com/matt-davies/uhug/blob/master/2014-06
 
 file is located at lipstick-server/grails-app/conf/BuildConfig.groovy
 
-<h4>Build Lipstick</h4>
-<pre>./gradlew --stacktrace --debug --info</pre>
+<h4>Build and Start Lipstick</h4>
+<pre>./gradlew --debug</pre>
 
 
 
